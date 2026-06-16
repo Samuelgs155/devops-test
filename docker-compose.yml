@@ -1,0 +1,6 @@
+services:
+  springboot-demo:
+    container_name: springboot-demo
+    build: .
+    ports:
+      - "8080:8080"
