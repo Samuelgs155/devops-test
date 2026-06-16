@@ -4,6 +4,7 @@ pipeline {
     environment {
         APP_NAME = 'springboot-demo'
         SONARQUBE_ENV = 'SonarQube'
+        IMAGE_NAME = 'springboot-demo:latest'
     }
 
     stages {
@@ -16,7 +17,7 @@ pipeline {
         stage('Build and Test') {
             steps {
                 sh 'chmod +x gradlew'
-                sh './gradlew clean test'
+                sh './gradlew clean build'
             }
         }
 
@@ -38,19 +39,19 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t springboot-demo:latest .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Deploy Local') {
             steps {
-                sh '''
-                    docker rm -f springboot-demo || true
+                sh """
+                    docker rm -f ${APP_NAME} || true
                     docker run -d \
-                      --name springboot-demo \
+                      --name ${APP_NAME} \
                       -p 8080:8080 \
-                      springboot-demo:latest
-                '''
+                      ${IMAGE_NAME}
+                """
             }
         }
     }
